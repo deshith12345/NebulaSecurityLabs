@@ -206,7 +206,7 @@
             } else {
                 fb.className = 'feedback incorrect'; fb.style.display = 'flex';
                 icon.className = 'fas fa-times-circle';
-                text.textContent = "❌ Incorrect. Try using an XSS payload like <script>alert('XSS')</script>";
+                text.textContent = "❌ Incorrect. Try using an XSS payload like <scr" + "ipt>alert('XSS')<\/scr" + "ipt>";
             }
         });
 
