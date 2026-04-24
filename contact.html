@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community Forum - Nebula Security Labs</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --primary: #007aff; --secondary: #5856d6; --success: #34c759; --dark: #1d1d1f; --ios-glass: rgba(255,255,255,0.25); --ios-border: rgba(255,255,255,0.3); --ios-highlight: rgba(255,255,255,0.4); --glass-blur: saturate(180%) blur(20px); }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif; background: radial-gradient(circle at 20% 80%, rgba(0,122,255,0.15) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(88,86,214,0.15) 0%, transparent 50%), linear-gradient(135deg, #f5f5f7 0%, #e8e8ed 50%, #f5f5f7 100%); background-size: 400% 400%, 200% 200%, 400% 400%; animation: gradientShift 20s ease infinite; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem; }
+        @keyframes gradientShift { 0%, 100% { background-position: 0% 50%, 0% 0%, 0% 50%; } 50% { background-position: 100% 50%, 100% 100%, 100% 50%; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes popup { from { opacity: 0; transform: translate(-50%, -60%); } to { opacity: 1; transform: translate(-50%, -50%); } }
+        .forum-container { background: var(--ios-glass); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); padding: 3rem; border-radius: 24px; box-shadow: 0 8px 32px rgba(0,0,0,0.08), inset 0 1px 0 var(--ios-highlight); width: 100%; max-width: 900px; position: relative; border: 0.5px solid var(--ios-border); }
+        .forum-header { text-align: center; margin-bottom: 2rem; }
+        .forum-header h1 { color: var(--dark); margin-bottom: 0.5rem; font-size: 2.2rem; font-weight: 600; letter-spacing: -0.5px; }
+        .forum-header p { color: #666; font-size: 1rem; letter-spacing: -0.2px; }
+        .form-section { background: rgba(255,255,255,0.5); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); padding: 2rem; border-radius: 16px; margin-bottom: 2rem; border: 0.5px solid var(--ios-border); }
+        .form-section h2 { color: var(--dark); margin-bottom: 1.5rem; font-size: 1.5rem; display: flex; align-items: center; gap: 0.5rem; font-weight: 600; letter-spacing: -0.3px; }
+        .form-group { margin-bottom: 1.5rem; }
+        .form-label { display: flex; margin-bottom: 0.5rem; color: var(--dark); font-weight: 600; align-items: center; gap: 0.5rem; font-size: 0.95rem; letter-spacing: -0.2px; }
+        .form-input, .form-textarea { width: 100%; padding: 1rem; border: 2px solid rgba(0,0,0,0.08); border-radius: 12px; font-size: 1rem; transition: all 0.3s ease; background: rgba(255,255,255,0.6); font-family: inherit; backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); }
+        .form-input:focus, .form-textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(0,122,255,0.1); background: white; }
+        .form-textarea { resize: vertical; min-height: 120px; }
+        .submit-btn { background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color: white; padding: 1rem 2rem; border: none; border-radius: 12px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 0.5rem; box-shadow: 0 4px 12px rgba(0,122,255,0.25); letter-spacing: -0.2px; }
+        .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,122,255,0.35); }
+        .messages-section { background: var(--ios-glass); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border-radius: 16px; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.08); margin-bottom: 2rem; border: 0.5px solid var(--ios-border); }
+        .messages-header { background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color: white; padding: 1.5rem; display: flex; align-items: center; gap: 0.5rem; font-weight: 600; }
+        .messages-container { padding: 1.5rem; max-height: 400px; overflow-y: auto; }
+        .message-item { padding: 1rem; border-bottom: 1px solid rgba(0,0,0,0.06); transition: background-color 0.3s ease; }
+        .message-item:last-child { border-bottom: none; }
+        .message-item:hover { background: rgba(255,255,255,0.5); }
+        .message-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+        .message-author { font-weight: 600; color: var(--primary); display: flex; align-items: center; gap: 0.5rem; }
+        .message-time { color: #718096; font-size: 0.9rem; }
+        .message-content { color: #4a5568; line-height: 1.6; padding-left: 0.5rem; }
+        .educational-section { background: rgba(255,255,255,0.5); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border-radius: 16px; padding: 2rem; border: 0.5px solid var(--ios-border); }
+        .educational-section h3 { color: var(--dark); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; font-size: 1.5rem; font-weight: 600; letter-spacing: -0.3px; }
+        .educational-content { margin-bottom: 1.5rem; }
+        .educational-content p { margin-bottom: 1rem; color: #555; line-height: 1.6; letter-spacing: -0.2px; }
+        .answer-form { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+        .answer-input { flex: 1; padding: 1rem; border: 2px solid rgba(0,0,0,0.08); border-radius: 12px; font-size: 1rem; background: rgba(255,255,255,0.6); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); }
+        .answer-input:focus { outline: none; border-color: var(--success); box-shadow: 0 0 0 4px rgba(52,199,89,0.1); background: white; }
+        .submit-answer-btn { padding: 1rem 1.5rem; background: var(--success); color: white; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; gap: 0.5rem; box-shadow: 0 4px 12px rgba(52,199,89,0.25); }
+        .submit-answer-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(52,199,89,0.35); }
+        .feedback { padding: 1rem; border-radius: 12px; font-weight: 500; display: none; align-items: center; gap: 0.5rem; backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); }
+        .feedback.correct { background: rgba(52,199,89,0.15); color: #1e7e34; border: 1px solid rgba(52,199,89,0.3); }
+        .feedback.incorrect { background: rgba(255,59,48,0.15); color: #c4190c; border: 1px solid rgba(255,59,48,0.3); }
+        .hint-btn { background: transparent; color: var(--primary); border: 1px solid var(--primary); padding: 0.8rem 1.5rem; border-radius: 12px; cursor: pointer; font-size: 1rem; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 500; font-family: inherit; }
+        .hint-btn:hover { background: var(--primary); color: white; }
+        .hint-content { display: none; margin-top: 1rem; padding: 1.5rem; background: rgba(255,255,255,0.6); border-radius: 12px; border: 1px solid var(--ios-border); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); }
+        .hint-content.show { display: block; animation: fadeIn 0.3s ease-out; }
+        .flag-reveal { background: linear-gradient(135deg, var(--success) 0%, #38a169 100%); color: white; padding: 1.5rem; border-radius: 12px; text-align: center; margin-top: 1rem; font-family: 'Courier New', monospace; font-weight: 600; font-size: 1.1rem; display: none; align-items: center; justify-content: center; gap: 0.5rem; box-shadow: 0 4px 12px rgba(52,199,89,0.25); }
+        .xss-popup { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--ios-glass); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); padding: 2rem; border-radius: 24px; box-shadow: 0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 var(--ios-highlight); z-index: 1000; text-align: center; display: none; max-width: 90%; width: 400px; border: 0.5px solid var(--ios-border); }
+        .xss-popup.show { display: block; animation: popup 0.3s ease-out; }
+        .xss-popup-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 999; display: none; backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
+        .xss-popup-overlay.show { display: block; }
+        .xss-popup h3 { color: var(--dark); margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; font-weight: 600; }
+        .xss-popup .flag { background: rgba(255,255,255,0.6); padding: 1rem; border-radius: 12px; font-family: 'Courier New', monospace; font-weight: bold; margin: 1rem 0; border: 2px dashed var(--primary); font-size: 1.1rem; backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); }
+        .xss-popup-close { background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 12px; cursor: pointer; margin-top: 1rem; font-weight: 600; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(0,122,255,0.25); }
+        .xss-popup-close:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,122,255,0.35); }
+        .back-link { text-align: center; margin-top: 2rem; }
+        .back-link a { color: var(--primary); text-decoration: none; font-weight: 500; display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.8rem 1.5rem; border: 2px solid var(--primary); border-radius: 12px; transition: all 0.3s ease; letter-spacing: -0.2px; }
+        .back-link a:hover { background: var(--primary); color: white; transform: translateY(-2px); }
+        .reset-btn { background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%); color: white; padding: 1rem 2rem; border: none; border-radius: 12px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 0.5rem; text-decoration: none; box-shadow: 0 4px 12px rgba(237,137,54,0.25); }
+        .reset-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(237,137,54,0.35); }
+        code { background: rgba(0,0,0,0.06); padding: 0.2rem 0.4rem; border-radius: 6px; font-family: 'Courier New', monospace; font-size: 0.9rem; color: var(--dark); }
+        @media (max-width: 768px) { body { padding: 1rem; } .forum-container { padding: 2rem 1.5rem; } .answer-form { flex-direction: column; } .message-header { flex-direction: column; align-items: flex-start; gap: 0.5rem; } .xss-popup { width: 95%; padding: 1.5rem; } }
+    </style>
+</head>
+<body>
+    <div class="xss-popup-overlay" id="xssOverlay"></div>
+    <div class="xss-popup" id="xssPopup">
+        <h3><i class="fas fa-bug"></i> XSS Vulnerability Detected!</h3>
+        <p>You've successfully triggered an XSS attack! Here's your flag:</p>
+        <div class="flag">FLAG{XSS_4L3RT}</div>
+        <p>Enter this flag in the educational section below to complete the challenge.</p>
+        <button class="xss-popup-close" onclick="closeXSSPopup()">Close</button>
+    </div>
+
+    <div class="forum-container">
+        <div class="forum-header">
+            <h1><i class="fas fa-comments"></i> Community Forum</h1>
+            <p>Share your thoughts and connect with the community</p>
+        </div>
+
+        <div class="form-section">
+            <h2><i class="fas fa-plus-circle"></i> Post New Message</h2>
+            <form id="messageForm" autocomplete="off">
+                <div class="form-group">
+                    <label class="form-label" for="name"><i class="fas fa-user"></i> Your Name</label>
+                    <input type="text" id="name" name="name" class="form-input" placeholder="Enter your name (optional)">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="message"><i class="fas fa-comment"></i> Message</label>
+                    <textarea id="message" name="message" class="form-textarea" placeholder="Share your thoughts..."></textarea>
+                </div>
+                <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+                    <button type="submit" class="submit-btn"><i class="fas fa-paper-plane"></i> Post Message</button>
+                    <button type="button" class="hint-btn" onclick="toggleHint()"><i class="fas fa-lightbulb"></i> Need a hint?</button>
+                </div>
+                <div class="hint-content" id="hintContent">
+                    <p><strong>XSS Payload Examples:</strong></p>
+                    <p><code>&lt;script&gt;alert('XSS')&lt;/script&gt;</code></p>
+                    <p><code>&lt;img src=x onerror=alert('XSS')&gt;</code></p>
+                    <p>Try any of these payloads in the message field to trigger the XSS popup!</p>
+                </div>
+            </form>
+        </div>
+
+        <div class="messages-section">
+            <div class="messages-header"><h2><i class="fas fa-list"></i> Recent Messages (<span id="msgCount">0</span>)</h2></div>
+            <div class="messages-container" id="messagesContainer">
+                <div class="message-item" id="noMessages">
+                    <div class="message-header"><div class="message-author"><i class="fas fa-info-circle"></i> System</div><div class="message-time">—</div></div>
+                    <div class="message-content">No messages yet. Be the first to post!</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="educational-section">
+            <h3><i class="fas fa-graduation-cap"></i> XSS Challenge</h3>
+            <div class="educational-content">
+                <p><strong>About XSS (Cross-Site Scripting):</strong> XSS occurs when an attacker can inject malicious scripts into web pages viewed by other users.</p>
+                <p><strong>Your Mission:</strong> Use XSS to inject a script that will display a popup with the flag.</p>
+                <p><strong>Challenge:</strong> Enter the flag that appears in the XSS popup below to complete this challenge.</p>
+            </div>
+            <form id="educationalForm">
+                <div class="answer-form">
+                    <input type="text" id="eduAnswer" class="answer-input" placeholder="Enter the flag (FLAG{...})">
+                    <button type="submit" class="submit-answer-btn"><i class="fas fa-flag"></i> Submit Flag</button>
+                </div>
+                <div class="feedback" id="eduFeedback"><i id="fbIcon"></i> <span id="fbText"></span></div>
+                <div class="flag-reveal" id="flagReveal"><i class="fas fa-flag"></i> FLAG{XSS_4L3RT}</div>
+            </form>
+        </div>
+
+        <div class="back-link"><a href="index.html"><i class="fas fa-arrow-left"></i> Back to Home</a></div>
+    </div>
+
+    <script>
+        const messages = [];
+        const FLAG = 'FLAG{XSS_4L3RT}';
+
+        function containsXSSPayload(input) {
+            const patterns = [/<script/i, /javascript:/i, /onload=/i, /onerror=/i, /onclick=/i, /alert\(/i, /confirm\(/i, /prompt\(/i, /document\./i, /window\./i, /eval\(/i, /xss/i];
+            return patterns.some(p => p.test(input));
+        }
+
+        document.getElementById('messageForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('name').value.trim().substring(0, 100) || 'Anonymous';
+            const msg = document.getElementById('message').value.trim().substring(0, 2000);
+            if (!msg) return;
+
+            messages.push({ name, message: msg, created_at: new Date().toLocaleString() });
+            if (messages.length > 5) messages.splice(0, messages.length - 5);
+
+            renderMessages();
+
+            if (containsXSSPayload(msg)) {
+                document.getElementById('xssOverlay').classList.add('show');
+                document.getElementById('xssPopup').classList.add('show');
+            }
+
+            this.reset();
+        });
+
+        function renderMessages() {
+            const container = document.getElementById('messagesContainer');
+            document.getElementById('msgCount').textContent = messages.length;
+            if (messages.length === 0) {
+                container.innerHTML = '<div class="message-item"><div class="message-header"><div class="message-author"><i class="fas fa-info-circle"></i> System</div><div class="message-time">—</div></div><div class="message-content">No messages yet. Be the first to post!</div></div>';
+                return;
+            }
+            container.innerHTML = [...messages].reverse().map(m => `
+                <div class="message-item">
+                    <div class="message-header">
+                        <div class="message-author"><i class="fas fa-user-circle"></i> ${escapeHtml(m.name)}</div>
+                        <div class="message-time">${escapeHtml(m.created_at)}</div>
+                    </div>
+                    <div class="message-content">${m.message}</div>
+                </div>`).join('');
+        }
+
+        function escapeHtml(t) { const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
+
+        function closeXSSPopup() {
+            document.getElementById('xssOverlay').classList.remove('show');
+            document.getElementById('xssPopup').classList.remove('show');
+        }
+
+        document.getElementById('educationalForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const answer = document.getElementById('eduAnswer').value.trim();
+            const fb = document.getElementById('eduFeedback');
+            const icon = document.getElementById('fbIcon');
+            const text = document.getElementById('fbText');
+            if (answer.toUpperCase() === FLAG) {
+                fb.className = 'feedback correct'; fb.style.display = 'flex';
+                icon.className = 'fas fa-check-circle';
+                text.textContent = 'Correct! You\'ve successfully demonstrated the XSS vulnerability!';
+                document.getElementById('flagReveal').style.display = 'flex';
+                try { const p = JSON.parse(localStorage.getItem('nebula_progress') || '{}'); p.xss = true; localStorage.setItem('nebula_progress', JSON.stringify(p)); } catch(e){}
+            } else {
+                fb.className = 'feedback incorrect'; fb.style.display = 'flex';
+                icon.className = 'fas fa-times-circle';
+                text.textContent = "❌ Incorrect. Try using an XSS payload like <script>alert('XSS')</script>";
+            }
+        });
+
+        function toggleHint() { document.getElementById('hintContent').classList.toggle('show'); }
+    </script>
+</body>
+</html>
