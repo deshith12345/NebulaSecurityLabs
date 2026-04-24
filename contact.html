@@ -144,8 +144,9 @@
         const FLAG = 'FLAG{XSS_4L3RT}';
 
         function containsXSSPayload(input) {
-            const patterns = [/<script/i, /javascript:/i, /onload=/i, /onerror=/i, /onclick=/i, /alert\(/i, /confirm\(/i, /prompt\(/i, /document\./i, /window\./i, /eval\(/i, /xss/i];
-            return patterns.some(p => p.test(input));
+            const lower = input.toLowerCase();
+            const keywords = ['<scr' + 'ipt', 'javascript:', 'onload=', 'onerror=', 'onclick=', 'alert(', 'confirm(', 'prompt(', 'document.', 'window.', 'eval(', 'xss'];
+            return keywords.some(k => lower.includes(k));
         }
 
         document.getElementById('messageForm').addEventListener('submit', function(e) {
