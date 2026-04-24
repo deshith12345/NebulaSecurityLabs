@@ -11,7 +11,7 @@ An educational web security platform designed to teach cybersecurity concepts th
 
 ## 🚀 Live Demo
 
-Visit: nebulasecuritylabs.liveblog365.com
+Visit: [nebulasecuritylab.vercel.app](https://nebulasecuritylab.vercel.app)
 
 ## 📋 Challenges
 
